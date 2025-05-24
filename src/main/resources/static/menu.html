@@ -28,45 +28,170 @@
     </div>
 </nav>
 
-<!-- Menu Content -->
 <div class="container mt-5">
     <h1 class="mb-4">Nuestro Menú</h1>
-    <div class="row">
-        <!-- Plato 1 -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="https://source.unsplash.com/400x250/?food,plate" class="card-img-top" alt="Plato 1">
-                <div class="card-body">
-                    <h5 class="card-title">Pasta Alfredo</h5>
-                    <p class="card-text">Deliciosa pasta con salsa cremosa de alfredo, acompañada de pollo y especias.</p>
-                </div>
+    <!-- Formulario para agregar un nuevo plato -->
+    <form id="addPlatoForm" class="mb-4">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input type="text" class="form-control" id="nombre" placeholder="Nombre del plato" required>
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" id="descripcion" placeholder="Descripción" required>
+            </div>
+            <div class="col-md-3">
+                <input type="url" class="form-control" id="imagen" placeholder="URL de imagen (opcional)">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-success w-100">Agregar</button>
             </div>
         </div>
-        <!-- Plato 2 -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="https://source.unsplash.com/400x250/?food,salad" class="card-img-top" alt="Plato 2">
-                <div class="card-body">
-                    <h5 class="card-title">Ensalada César</h5>
-                    <p class="card-text">Fresca mezcla de lechugas, crutones, pollo a la plancha y aderezo césar.</p>
-                </div>
-            </div>
-        </div>
-        <!-- Plato 3 -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="https://source.unsplash.com/400x250/?food,meat" class="card-img-top" alt="Plato 3">
-                <div class="card-body">
-                    <h5 class="card-title">Bife de Chorizo</h5>
-                    <p class="card-text">Jugoso corte de carne asada, acompañado de papas rústicas y vegetales.</p>
-                </div>
-            </div>
-        </div>
-        <!-- Agrega más platos aquí si deseas -->
+    </form>
+
+    <!-- Contenedor de platos -->
+    <div class="row" id="menuContainer">
+        <!-- JS insertará los platos aquí -->
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- Modal para editar plato -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="editPlatoForm" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Plato</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="mb-3">
+                    <label for="editNombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="editNombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editDescripcion" class="form-label">Descripción</label>
+                    <input type="text" class="form-control" id="editDescripcion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="editImagen" class="form-label">URL de imagen (opcional)</label>
+                    <input type="url" class="form-control" id="editImagen">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Interactividad -->
+<script>
+    const menuContainer = document.getElementById('menuContainer');
+    const addPlatoForm = document.getElementById('addPlatoForm');
+    const editPlatoForm = document.getElementById('editPlatoForm');
+    let platos = [];
+    const IMAGEN_DEFAULT = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1TfeWRgY2ekpPB2om4uu9ZDjoaAnWnpkC4A&s';
+
+    // Cargar menú al iniciar
+    function cargarMenu() {
+        fetch('/api/menu')
+            .then(res => res.json())
+            .then(data => {
+                platos = data;
+                renderMenu();
+            });
+    }
+
+    // Mostrar platos
+    function renderMenu() {
+        menuContainer.innerHTML = '';
+        if(platos.length === 0) {
+            menuContainer.innerHTML = '<div class="col-12 text-center text-muted">No hay platos en el menú.</div>';
+            return;
+        }
+        platos.forEach(plato => {
+            let imagen = plato.imagen;
+            if (!imagen || imagen.trim() === "") imagen = IMAGEN_DEFAULT;
+            menuContainer.innerHTML += `
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="${imagen}" class="card-img-top" alt="${plato.nombre}" style="height:250px;object-fit:cover;">
+                <div class="card-body">
+                    <h5 class="card-title">${plato.nombre}</h5>
+                    <p class="card-text">${plato.descripcion}</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-sm btn-warning" onclick="abrirEditar(${plato.id})">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarPlato(${plato.id})">Borrar</button>
+                </div>
+            </div>
+        </div>
+        `;
+        });
+    }
+
+    // Agregar nuevo plato
+    addPlatoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const nombre = document.getElementById('nombre').value.trim();
+        const descripcion = document.getElementById('descripcion').value.trim();
+        const imagen = document.getElementById('imagen').value.trim();
+        fetch('/api/menu', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({nombre, descripcion, imagen})
+        })
+            .then(res => res.json())
+            .then(data => {
+                addPlatoForm.reset();
+                cargarMenu();
+            });
+    });
+
+    // Borrar plato
+    function eliminarPlato(id) {
+        if(confirm('¿Seguro que deseas borrar este plato?')) {
+            fetch(`/api/menu/${id}`, { method: 'DELETE' })
+                .then(() => cargarMenu());
+        }
+    }
+
+    // Abrir modal de editar
+    window.abrirEditar = function(id) {
+        const plato = platos.find(p => p.id === id);
+        document.getElementById('editId').value = plato.id;
+        document.getElementById('editNombre').value = plato.nombre;
+        document.getElementById('editDescripcion').value = plato.descripcion;
+        document.getElementById('editImagen').value = plato.imagen || "";
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        editModal.show();
+    }
+
+    // Guardar cambios de edición
+    editPlatoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editId').value;
+        const nombre = document.getElementById('editNombre').value.trim();
+        const descripcion = document.getElementById('editDescripcion').value.trim();
+        const imagen = document.getElementById('editImagen').value.trim();
+        fetch(`/api/menu/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({nombre, descripcion, imagen})
+        })
+            .then(res => {
+                if(res.ok) {
+                    cargarMenu();
+                    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                }
+            });
+    });
+
+    // Inicializar
+    cargarMenu();
+</script>
 </body>
 </html>
