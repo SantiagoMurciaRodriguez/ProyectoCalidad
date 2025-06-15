@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class MenuControllerTest {
 
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -32,6 +33,55 @@ class MenuControllerTest {
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(3))))
                 .andExpect(jsonPath("$[0].nombre", notNullValue()))
                 .andExpect(jsonPath("$[0].imagen", notNullValue()));
+    }
+
+    // Test para PUT con ID inexistente (debe devolver 404 Not Found)
+// Verifica que intentar actualizar un plato que no existe devuelve 404.
+    @Test
+    void testUpdatePlatoInexistente() throws Exception {
+        var updatePlato = new PlatoDTO("Falso", "No existe", null);
+        mockMvc.perform(put("/api/menu/999999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatePlato)))
+                .andExpect(status().isNotFound());
+    }
+
+    // Test para DELETE con ID inexistente (debe devolver 404 Not Found)
+// Verifica que intentar borrar un plato que no existe devuelve 404.
+    @Test
+    void testDeletePlatoInexistente() throws Exception {
+        mockMvc.perform(delete("/api/menu/888888"))
+                .andExpect(status().isNotFound());
+    }
+
+    // Test para POST con campos extra (debe ignorar los campos adicionales y no fallar)
+// Verifica que los campos no definidos en el modelo son ignorados y no generan error.
+    @Test
+    void testAddPlatoCamposExtra() throws Exception {
+        String body = """
+        {
+            "nombre": "Hamburguesa",
+            "descripcion": "Clásica.",
+            "imagen": "",
+            "precio": 12345,
+            "categoria": "Rápida"
+        }
+        """;
+        mockMvc.perform(post("/api/menu")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("Hamburguesa"))
+                .andExpect(jsonPath("$.descripcion").value("Clásica."))
+                .andExpect(jsonPath("$.imagen").value(IMAGEN_DEFAULT));
+    }
+
+    // Test para GET con ID inexistente (debe devolver 404 Not Found)
+// Verifica que intentar obtener un plato que no existe devuelve 404.
+    @Test
+    void testGetPlatoInexistente() throws Exception {
+        mockMvc.perform(get("/api/menu/777777"))
+                .andExpect(status().isNotFound());
     }
 
     // Test para POST /api/menu (crear un nuevo plato con imagen personalizada)
