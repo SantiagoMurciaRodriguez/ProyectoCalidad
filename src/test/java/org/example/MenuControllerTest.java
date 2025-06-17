@@ -36,7 +36,7 @@ class MenuControllerTest {
     }
 
     // Test para PUT con ID inexistente (debe devolver 404 Not Found)
-// Verifica que intentar actualizar un plato que no existe devuelve 404.
+    // Verifica que intentar actualizar un plato que no existe devuelve 404.
     @Test
     void testUpdatePlatoInexistente() throws Exception {
         var updatePlato = new PlatoDTO("Falso", "No existe", null);
@@ -47,7 +47,7 @@ class MenuControllerTest {
     }
 
     // Test para DELETE con ID inexistente (debe devolver 404 Not Found)
-// Verifica que intentar borrar un plato que no existe devuelve 404.
+    // Verifica que intentar borrar un plato que no existe devuelve 404.
     @Test
     void testDeletePlatoInexistente() throws Exception {
         mockMvc.perform(delete("/api/menu/888888"))
@@ -55,7 +55,7 @@ class MenuControllerTest {
     }
 
     // Test para POST con campos extra (debe ignorar los campos adicionales y no fallar)
-// Verifica que los campos no definidos en el modelo son ignorados y no generan error.
+    // Verifica que los campos no definidos en el modelo son ignorados y no generan error.
     @Test
     void testAddPlatoCamposExtra() throws Exception {
         String body = """

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservas - Restaurante Ejemplo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body { height: 100%; }
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        .main-content { flex: 1 0 auto; }
+        footer { flex-shrink: 0; }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">Restaurante Ejemplo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="menu.html">Menú</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contacto.html">Contáctanos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="reservas.html">Reservas</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 p-4">
+                    <h2 class="mb-4 text-center">Reservar mesa</h2>
+                    <form id="reservaForm" autocomplete="off">
+                        <div class="mb-3">
+                            <label for="comensales" class="form-label">Número de comensales</label>
+                            <input type="number" min="1" max="20" id="comensales" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" id="fecha" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mesa" class="form-label">Mesa</label>
+                            <select id="mesa" class="form-select" required>
+                                <option value="">Selecciona una mesa...</option>
+                                <option value="1">Mesa 1</option>
+                                <option value="2">Mesa 2</option>
+                                <option value="3">Mesa 3</option>
+                                <option value="4">Mesa 4</option>
+                                <option value="5">Mesa 5</option>
+                                <option value="6">Mesa 6</option>
+                                <option value="7">Mesa 7</option>
+                                <option value="8">Mesa 8</option>
+                                <option value="9">Mesa 9</option>
+                                <option value="10">Mesa 10</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">Confirmar reserva</button>
+                        </div>
+                    </form>
+                    <div id="reservaExito" class="alert alert-success mt-4 d-none" role="alert">
+                        ¡Reserva realizada correctamente! Te esperamos en el restaurante.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    &copy; 2025 Restaurante Ejemplo. Todos los derechos reservados.
+</footer>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById("reservaForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        // Simular reserva exitosa
+        document.getElementById("reservaForm").reset();
+        document.getElementById("reservaExito").classList.remove("d-none");
+        setTimeout(() => {
+            document.getElementById("reservaExito").classList.add("d-none");
+        }, 4500);
+    });
+</script>
+</body>
+</html>

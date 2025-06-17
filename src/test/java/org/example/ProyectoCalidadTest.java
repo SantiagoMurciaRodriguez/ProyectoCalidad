@@ -38,19 +38,15 @@ public class ProyectoCalidadTest {
 
     @Test
     public void testAgregarYEditarPlato() throws InterruptedException {
-        driver.get("http://localhost:8080/");
+        // Ahora accedemos al index actualizado
+        driver.get("http://localhost:8080/index.html");
         driver.manage().window().setSize(new Dimension(1355, 729));
         Thread.sleep(1000);
 
-        driver.findElement(By.cssSelector("#collapseOne > .accordion-body")).click();
-        Thread.sleep(700);
-        driver.findElement(By.cssSelector("#headingTwo > .accordion-button")).click();
-        Thread.sleep(700);
-        driver.findElement(By.cssSelector("#headingThree > .accordion-button")).click();
-        Thread.sleep(700);
-        driver.findElement(By.cssSelector("#headingOne > .accordion-button")).click();
-        Thread.sleep(1000);
+        // El index actual ya NO tiene los desplegables ni los acordeones anteriores,
+        // así que eliminamos esas líneas.
 
+        // Ahora accedemos al Menú desde la navbar
         driver.findElement(By.linkText("Menú")).click();
         Thread.sleep(1000);
 
@@ -76,16 +72,17 @@ public class ProyectoCalidadTest {
         btnAgregar.click();
         Thread.sleep(1200);
 
-        
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("modal-backdrop")));
-
+        // Si hay modal backdrop de Bootstrap, espera a que desaparezca
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("modal-backdrop")));
+        } catch (TimeoutException e) {
+            // Si no hay modal-backdrop, continúa
+        }
 
         WebElement btnEditar1 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".col-md-4:nth-child(1) .btn-warning")));
 
-
         js.executeScript("arguments[0].scrollIntoView({block: 'center'});", btnEditar1);
         Thread.sleep(500);
-
 
         wait.until(ExpectedConditions.elementToBeClickable(btnEditar1)).click();
         Thread.sleep(900);
