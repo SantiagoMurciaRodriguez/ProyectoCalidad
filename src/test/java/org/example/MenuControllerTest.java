@@ -77,7 +77,7 @@ class MenuControllerTest {
     }
 
     // Test para GET con ID inexistente (debe devolver 404 Not Found)
-// Verifica que intentar obtener un plato que no existe devuelve 404.
+    // Verifica que intentar obtener un plato que no existe devuelve 404.
     @Test
     void testGetPlatoInexistente() throws Exception {
         mockMvc.perform(get("/api/menu/777777"))
